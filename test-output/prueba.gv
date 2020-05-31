@@ -1,0 +1,12 @@
+digraph Automata {
+	0 [label=0 shape=doublecircle]
+	0 -> 1 [label=abc]
+	0 -> 2 [label=d]
+	0 -> 3 [label=a]
+	1 [label=1 shape=doublecircle]
+	1 -> 1 [label=abc]
+	1 -> 2 [label=d]
+	2 [label=2]
+	2 -> 1 [label=c]
+	3 [label=3 shape=doublecircle]
+}

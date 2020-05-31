@@ -1,0 +1,16 @@
+Automata de ((abc)|(dξc))*|a
+simbolos del lenguaje: a b c d ξ 
+
+Inicial  De AceptacionEstado: 0
+con: abc a: 1
+con: d a: 2
+con: a a: 3
+
+ De AceptacionEstado: 1
+con: abc a: 1
+con: d a: 2
+
+Estado: 2
+con: c a: 1
+
+ De AceptacionEstado: 3

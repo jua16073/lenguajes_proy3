@@ -1,0 +1,8 @@
+letra
+numero
+numero65
+10.5
+-4
++4
+4AH
+Nani
