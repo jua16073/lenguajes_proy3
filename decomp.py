@@ -131,7 +131,6 @@ def TOKENS(file, actual):
 
 def PRODUCTIONS(file, actual):
     print("leyendo PRODUCTIONS")
-    print(actual)
     actual += 1
     temp = ""
     productions = {}
@@ -140,34 +139,26 @@ def PRODUCTIONS(file, actual):
     line = ""
     flag = False
     while actual < len(file):
-        print(temp)
-        if flag:
-            pass
-        if not flag:
-            temp += file[actual]
-        if not flag and temp[-1] == "." and (file[actual + 1] == " " or file[actual+1] == "\n"):
-            print(temp)
+        temp += file[actual]
+        if temp[-1] == "."  and temp[-2] != "(" and (file[actual + 1] == " " or file[actual+1] == "\n"):
+            #print(temp)
             temp_id = temp.split("=", 1)[0]
             temp_values = temp.split("=", 1)[1]
             productions[temp_id] = temp_values
             temp = ""
-        if file[actual] == "(" and file[actual + 1] == "." and not flag:
-            flag = True
-            actual += 1
-            temp = temp[:-1]
-        if flag and file[actual] == "." and file[actual  + 1] == ")":
-            actual += 1
-            flag = False
-        if temp == "END":
+        # if file[actual] == "(" and file[actual + 1] == "." and not flag:
+        #     flag = True
+        #     actual += 1
+        #     temp = temp[:-1]
+        # if flag and file[actual] == "." and file[actual  + 1] == ")":
+        #     actual += 1
+        #     flag = False
+        #print(temp)
+        if "\nEND" in temp:
             actual -= 3
-            print("salir")
             temp = ""
             break
         actual += 1
-    print("producciones")
-    print(productions)
-    for p in productions:
-        print(p, ": ", productions[p])
     return productions, actual
 
 def END(file, actual, name):

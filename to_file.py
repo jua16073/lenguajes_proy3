@@ -1,12 +1,21 @@
 # file to create another file
 
-def create(dfa, extras, name):
+def create(dfa, extras, parser, name = "nani"):
+    print("Haciendo archivo ", name)
     i = 0
     output = open("./outputs/" + name + ".py", "w+")
     output.write("#file to test\n\n")
+
+    output.write(parser)
+    output.write("\n")
     #output.write("from libs import evaluate\n")
     output.write("import collections\n")
     output.write("EPSILON = 'ε'\n")
+
+    output.write("class Token:\n")
+    output.write("\tdef __init__(self, type, value):\n")
+    output.write("\t\tself.type = type\n")
+    output.write("\t\tself.value = value\n\n")
 
 
     output.write("class Automata:\n     def __init__(self, exp):\n        self.id = exp \n        self.states = []\n\n")
@@ -80,9 +89,10 @@ def create(dfa, extras, name):
     for automata in extras:
         write_automata(extras[automata], i, output, automata)
         i += 1
+    output.write("  tokens = []\n")
     output.write("  print('archivo a revisar?')\n")
     output.write("  archivo = input()\n")
-    output.write("  prueba = open('./pruebas/'+archivo)\n")
+    output.write("  prueba = open('./tests/'+archivo)\n")
     output.write("  data = prueba.read()\n")
     output.write("  prueba.close()\n")
     
@@ -98,14 +108,21 @@ def create(dfa, extras, name):
     output.write("              print(': False')\n")
     output.write("          last += len(valid)\n")
     output.write("          aut = 1\n")
+    output.write("          new_token = Token('ANY', valid)\n")
     output.write("          while aut<len(automatas):\n")
     output.write("              if (is_in_language(automatas[aut], valid)):\n")
-    output.write("                  print(valid, ': ', automatas[aut].id)\n")
+    output.write("                  new_token = Token(automatas[aut].id, valid)\n")
+    output.write("                  #print(new_token.value, ': ', new_token.type)\n")
+    output.write("                  #tokens.append(new_token)\n")
     output.write("                  break\n")
     output.write('              aut += 1\n')
+    output.write("          print(new_token.value, ': ', new_token.type)\n")
+    output.write("          tokens.append(new_token)\n")
     output.write("          i += len(valid)\n")
     output.write("      else:\n")
     output.write("          i+=1\n")
+    output.write("  parser = Parser(tokens)\n")
+    output.write("  parser.Expr()\n")
     output.write('if __name__ == "__main__":\n'+'   main()')
 
     output.close()

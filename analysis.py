@@ -7,6 +7,7 @@ from libs import directo
 from libs import graph
 
 import decomp
+import parser
 
 OPERATORS = ['|', 'ξ']
 UNITARY = ['*', 'ψ', '?']
@@ -21,15 +22,15 @@ def analyze(name, characters, keywords, tokens, productions):
     #print(keyword_parse_lines)
     token_parse_lines = TOKENS(tokens, character_parse_lines)
     #print(token_parse_lines)
-    PRODUCTIONS(productions)
     dfas, complete_line = make_tree(keyword_parse_lines, token_parse_lines)
+    parser_line, complete_tokens = parser.parser(productions, complete_line, tokens, keywords)
     # Hacer automata
     #dfa = directo.directo(tree, complete_parse_line)
-    final_dfa = make_one(dfas, complete_line)
+    final_dfa = make_one(dfas, complete_tokens)
     #graph.graph(final_dfa, "nani")
     #resp = evaluate.is_in_language(final_dfa, "nani")
 
-    return final_dfa, dfas
+    return final_dfa, dfas, parser_line
 
 
 
@@ -123,7 +124,7 @@ def word_break(line, characters, actual = 0, inicial = ""):
         if temp in characters:
             validos.append(temp)
         actual += 1
-    print(max(validos, key=len))
+    #print(max(validos, key=len))
     return max(validos, key = len)
 
 
@@ -195,12 +196,7 @@ def TOKENS(tokens, characters):
             parse_line = parse_line[:-1]
         tokens_parse_lines[t] = parse_line
     return tokens_parse_lines
-
-def PRODUCTIONS(productions):
-    print("analizando PRODUCTIONS")
-    print(productions)
-    for p in productions:
-        print(p, ":", productions[p])
+            
 
 def make_tree(keyword_parse_lines, token_parse_lines):
     print("haciendo arboles")

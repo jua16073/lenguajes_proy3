@@ -2,6 +2,7 @@
 import file_read
 import decomp
 import analysis
+import to_file
 
 from libs import trees
 from libs import directo
@@ -25,7 +26,9 @@ def main():
     data = archivo.read()
     archivo.close()
     name, characters, keywords, tokens, productions = decomp.main(data)
-    analysis.analyze(name, characters,keywords,tokens,productions)
+    dfa, dfas, parser = analysis.analyze(name, characters,keywords,tokens,productions)
+    to_file.create(dfa, dfas, parser, "pruebas")
+    
 
 
 if __name__ == "__main__":
