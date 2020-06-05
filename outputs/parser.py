@@ -12,13 +12,19 @@ class Parser:
 			self.actual_token = self.tokens[self.id_token]
 			self.last_token = self.tokens[self.id_token - 1]
 
-	def expect(self, item):
+	def expect(self, item, arg = None):
 		og = self.id_token
 		possible = False
 		if item != None:
 			try:
-				item
-				possible = True
+				if arg == None:
+					ans = item()
+				else:
+					ans = item(arg)
+				if type(ans) == bool:
+					possible = ans
+				else:
+					possible = True
 			except:
 				possible = False
 		self.id_token = og
@@ -30,70 +36,90 @@ class Parser:
 		if type:
 			if self.actual_token.type == item:
 				self.advance()
-			#else:
+				return True
+			else:
+				return False
 				#print('expected ', item, ' got ', self.actual_token.type)
 		else:
 			if self.actual_token.value == item:
 				self.advance()
-			#else:
+				return True
+			else:
+				return False
 				#print('expected ', item, ' got ', self.actual_token.value)
 	value, result, value1, value2 = 0,0,0,0
 	def Expr(self):
 		while self.expect(self.Stat()):
 			self.Stat()
 			self.read(";")
-		self.read(".")
+			while self.expect(self.white}}()):
+			self.read('white', True)
+		while self.expect(self.read(white}".")):
+		self.read("white.")
 
 	def Stat(self):
-		value=0
-		self.Expression(value)
-		print(str(value))
+		value=0;
+		re=self.Expression(re)
+		self.value>()
+		print("Resultado: ",value)
 
 	def Expression(self,result):
-		result1,result2=0,0
-		self.Term(result1)
+		 result1,result2=0,0
+		re=self.Term(re)
+		self.result1>()
 		while self.expect(self.read("+")) or self.expect(self.read("-")):
 			if self.expect(self.read("+")):	
 				self.read("+")
-				self.Term(result2)
+				re=self.Term(re)
+				self.result2>()
 				result1+=result2
 	
 			elif self.expect(self.read("-")):
 				self.read("-")
-				self.Term(result2)
+				re=self.Term(re)
+				self.result2>()
 				result1-=result2
 		result=result1
+		return result
 
 	def Term(self,result):
 		result1,result2=0,0
-		self.Factor(result1)
+		result1=self.Factor(result1)
 		while self.expect(self.read("*")) or self.expect(self.read("/")):
 			if self.expect(self.read("*")):	
 				self.read("*")
-				self.Factor(result2)
+				re=self.Factor(re)
+				self.result2>()
 				result1*=result2
 	
 			elif self.expect(self.read("/")):
 				self.read("/")
-				self.Factor(result2)
+				re=self.Factor(re)
+				self.result2>()
 				result1/=result2
 		result=result1
+		return result
 
 	def Factor(self,result):
-		signo=1
+		sign=1
 		if self.expect(self.read('-')):
 			self.read("-")
-			signo=-1
-		if self.expect(self.Number(result)):
-			self.Number(result)
+			sign = -1
+		result=self.Number(result)if self.expect(self.Number(result>
+)):
+			
 			
 		elif self.expect(self.read("(")):
 			self.read("(")
-			self.Expression(result)
+			result=self.Expression(result)
 			self.read(")")
-		result*=signo
+		 result*=sign 
 
-	def Number(self,result):
-		self.read('number', True)
-		result=int(self.last_token.value)
+	def Number(self,refdoubleresult):
+		self.read('number', True)if self.expect(self.number				
+	()):
+			
+			
+		elif self.expect(self.decnumber()):
+		decnumberresult = float(last_oken.value)
 

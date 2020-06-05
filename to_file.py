@@ -74,6 +74,8 @@ def create(dfa, extras, parser, name = "nani"):
     output.write("      temp += file[actual]\n")
     output.write("      if is_in_language(automata0, temp):\n")
     output.write("          validos.append(temp)\n")
+    output.write("      elif len(temp) == 1  and is_in_language(automata0, str(ord(temp))):\n")
+    output.write("          validos.append(temp)\n")
     output.write("      actual += 1\n")
     output.write("  if validos:\n")
     output.write("      return max(validos, key = len)\n")

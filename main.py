@@ -22,12 +22,12 @@ def main():
     # print("Ingrese archivo ")
     # archivo = input()
     # archivo = open("./inputs/"+archivo)
-    archivo = open("./inputs/Aritmetica.ATG")
+    archivo = open("./inputs/DoubleAritmetica.ATG")
     data = archivo.read()
     archivo.close()
     name, characters, keywords, tokens, productions = decomp.main(data)
     dfa, dfas, parser = analysis.analyze(name, characters,keywords,tokens,productions)
-    to_file.create(dfa, dfas, parser, "pruebas")
+    to_file.create(dfa, dfas, parser, name)
     
 
 

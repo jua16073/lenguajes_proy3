@@ -23,13 +23,19 @@ def parser(productions, parse_line, tokens, keywords):
     string += "\t\t\tself.actual_token = self.tokens[self.id_token]\n"
     string += "\t\t\tself.last_token = self.tokens[self.id_token - 1]\n\n"
 
-    string += "\tdef expect(self, item):\n"
+    string += "\tdef expect(self, item, arg = None):\n"
     string += "\t\tog = self.id_token\n"
     string += "\t\tpossible = False\n"
     string += "\t\tif item != None:\n"
     string += "\t\t\ttry:\n"
-    string += "\t\t\t\titem\n"
-    string += "\t\t\t\tpossible = True\n"
+    string += "\t\t\t\tif arg == None:\n"
+    string += "\t\t\t\t\tans = item()\n"
+    string += "\t\t\t\telse:\n"
+    string += "\t\t\t\t\tans = item(arg)\n"
+    string += "\t\t\t\tif type(ans) == bool:\n"
+    string += "\t\t\t\t\tpossible = ans\n"
+    string += "\t\t\t\telse:\n"
+    string += "\t\t\t\t\tpossible = True\n"
     string += "\t\t\texcept:\n"
     string += "\t\t\t\tpossible = False\n"
     string += "\t\tself.id_token = og\n"
@@ -41,12 +47,16 @@ def parser(productions, parse_line, tokens, keywords):
     string += "\t\tif type:\n"
     string += "\t\t\tif self.actual_token.type == item:\n"
     string += "\t\t\t\tself.advance()\n"
-    string += "\t\t\t#else:\n"
+    string += "\t\t\t\treturn True\n"
+    string += "\t\t\telse:\n"
+    string += "\t\t\t\treturn False\n"
     string += "\t\t\t\t#print('expected ', item, ' got ', self.actual_token.type)\n"
     string += "\t\telse:\n"
     string += "\t\t\tif self.actual_token.value == item:\n"
     string += "\t\t\t\tself.advance()\n"
-    string += "\t\t\t#else:\n"
+    string += "\t\t\t\treturn True\n"
+    string += "\t\t\telse:\n"
+    string += "\t\t\t\treturn False\n"
     string += "\t\t\t\t#print('expected ', item, ' got ', self.actual_token.value)\n"
 
     string += "\tvalue, result, value1, value2 = 0,0,0,0\n"
@@ -60,20 +70,50 @@ def parser(productions, parse_line, tokens, keywords):
             if token not in new_tokens:
                 new_tokens.append(token)
 
-    print(string)
+    #print(string)
     file.write(string)
     file.close()
-    print(parse_line)
+    #print(parse_line)
     new_parse = parse_line[:-1]
     for token in new_tokens:
         if token in OPERATORS:
-            print(ord(token))
+            #print(ord(token))
             new_parse += "|" + str(ord(token))
         else:
             new_parse += "|" + token
     new_parse = new_parse + ")"
+    #print(new_parse)
+    fixed_parser = fix_expect(string)
     print(new_parse)
-    return string, new_parse
+    return fixed_parser, new_parse
+
+def fix_expect(parser):
+    parser = parser.split("\n")
+    new_parser = ""
+    for line in parser:
+        if "self.expect(" in line and "while" not in line:
+            original = line
+            new_line = line.split("(",1)
+            new_parser += new_line[0] + "("
+            args = new_line[1].split("(", 1)
+            second = args[1].replace(")", "")
+            second = second.replace(":", "")
+            new_parser += args[0] + "," + second + "):\n"
+        elif "self.expect(" in line and "while" in line:
+            or_parted = line.split("or")
+            for part in or_parted:
+                new_line = part.split("(",1)
+                new_parser += new_line[0] + "("
+                args = new_line[1].split("(", 1)
+                second = args[1].replace(")", "")
+                new_parser += args[0] + "," + second[:-1] + ") or"
+            new_parser = new_parser[:-2] +  ":\n"
+            #new_parser += line + "\n"
+        else:
+            new_parser += line + "\n"
+    #print(new_parser)
+    return new_parser
+
 
 
 def first(name, string):
@@ -132,10 +172,10 @@ def second(body, string, parse_line, tokens, key_words):
         elif body[actual] == "(" and body[actual+1] == ".":
             actual += 2
             while body[actual] != "." or body[actual + 1] != ")":
-                if body[actual] == " ":
-                    pass
-                else:
-                    temp += body[actual]
+                # if body[actual] == " ":
+                #     pass
+                # else:
+                temp += body[actual]
                 actual += 1
             actual += 1
             string += extras + temp + "\n"
@@ -152,7 +192,7 @@ def second(body, string, parse_line, tokens, key_words):
                 conditional = False
             string += extras + 'self.read("' + temp + '")\n'
             new_tokens.append(temp)
-            print(new_tokens)
+            #print(new_tokens)
             temp = ""
 
 
@@ -239,18 +279,27 @@ def second(body, string, parse_line, tokens, key_words):
                             conditional = False
                         name = temp.split("<", 1)[0]
                         arg = temp.split("<", 1)[1][:-1]
-                        temp = "self."+ name + "(" + arg + ")"
+                        temp = arg + "=self."+ name + "(" + arg + ")"
                 elif '"' in temp:
                     temp = "self.read(" + temp +")"
                 else:
                     temp = "self."+ temp + "()"
                 previous = string.rfind(temp)
                 string_parted = string[previous:]
-                string = string[:previous] + "if self.expect(" + temp +"):\n"
+                print(string_parted)
+                print(string[:previous])
+                print(temp)
+                if "=" in temp:
+                    expect_arg = temp.split("=")[1]
+                else:
+                    expect_arg = temp
+                string = string[:previous] + "if self.expect(" + expect_arg +"):\n"
+                print(string)
                 lines = string_parted.split("\n")
                 for line in lines:
                     string += extras + "\t"+ line + "\n"
                 temp == ""
+                print(string)
             elif body[extra] == "|":
                 pass
             # Siguiente parte del or
@@ -260,6 +309,8 @@ def second(body, string, parse_line, tokens, key_words):
             counter = 0 
             in_comillas = False
             while (body[i] not in OPS or not in_comillas) and counter != 2:
+                if body[i] == ")" and not in_comillas:
+                    break
                 if body[i] == " ":
                     pass
                 elif body[i] == '"':
@@ -294,7 +345,7 @@ def second(body, string, parse_line, tokens, key_words):
                         conditional = False
                     name = temp.split("<", 1)[0]
                     arg = temp.split("<", 1)[1][:-1]
-                    string += extras + "self."+ name + "(" + arg + ")\n"
+                    string += extras + arg.replace(" ", "") + "=self."+ name + "(" + arg + ")\n"
                 else:
                     if conditional:
                         string += "self.expect('" + temp + "'):\n"
